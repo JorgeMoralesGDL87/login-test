@@ -14,6 +14,7 @@ public class LoginTest extends BaseTest {
 
         // Validación
         String currentUrl = driver.getCurrentUrl();
+        //adding more comments
         //Assert.assertTrue(currentUrl.contains("Inicio"), "El login falló");
     }
 }

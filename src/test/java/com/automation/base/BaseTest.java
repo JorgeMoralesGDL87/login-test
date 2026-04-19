@@ -12,13 +12,13 @@ public class BaseTest {
 
     @BeforeMethod
     public void setUp() {
-        WebDriverManager.chromedriver().setup();
 
+        driver = new ChromeDriver();
+        WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
-        driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.get("https://app.voxy.com/v2/#/login");
     }

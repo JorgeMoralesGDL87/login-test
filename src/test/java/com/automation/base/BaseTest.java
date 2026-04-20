@@ -1,32 +1,47 @@
 package com.automation.base;
 
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.testng.annotations.*;
+
+import java.net.URL;
+import java.time.Duration;
+
 public class BaseTest {
-
-    protected WebDriver driver;
-
+    public static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+    public WebDriver getDriver() {
+        return driver.get();
+    }
     @BeforeMethod
-    public void setUp() {
+    public void setup() throws Exception {
 
-        driver = new ChromeDriver();
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        driver.manage().window().maximize();
-        driver.get("https://app.voxy.com/v2/#/login");
+        String browser = System.getProperty("browser", "chrome");
+
+        if (browser.equalsIgnoreCase("chrome")) {
+
+            ChromeOptions options = new ChromeOptions();
+
+            driver.set(new RemoteWebDriver(new URL("http://localhost:4444"), options));
+
+
+        } else if (browser.equalsIgnoreCase("firefox")) {
+
+            FirefoxOptions options = new FirefoxOptions();
+
+            driver.set(new RemoteWebDriver(new URL("http://localhost:4444"), options));
+        }
+
+        getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        getDriver().get("https://app.voxy.com/v2/#/login");
     }
 
     @AfterMethod
     public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
+
+            getDriver().quit();
+            driver.remove();
+
     }
 }

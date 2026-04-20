@@ -1,8 +1,28 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="SuiteLogin">
-    <test name="LoginTest">
+
+<suite name="Automation Suite"
+       parallel="tests"
+       thread-count="4">
+
+    <!-- 🔹 CHROME -->
+    <test name="Chrome Tests">
+        <parameter name="browser" value="chrome"/>
         <classes>
             <class name="com.automation.tests.LoginTest"/>
         </classes>
     </test>
+
+    <!-- 🔹 FIREFOX -->
+    <test name="Firefox Tests">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="com.automation.tests.LoginTest"/>
+        </classes>
+    </test>
+
+    <!-- 🔹 LISTENER -->
+    <listeners>
+        <listener class-name="listeners.TestListener"/>
+    </listeners>
+
 </suite>

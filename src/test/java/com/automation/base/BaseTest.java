@@ -1,10 +1,13 @@
 package com.automation.base;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.testng.annotations.*;
 
 import java.net.URL;
+import java.time.Duration;
 
 public class BaseTest {
     protected WebDriver driver;
@@ -14,24 +17,33 @@ public class BaseTest {
 
         String browser = System.getProperty("browser", "chrome");
 
-        DesiredCapabilities caps = new DesiredCapabilities();
-
         if (browser.equalsIgnoreCase("chrome")) {
-            caps.setBrowserName("chrome");
+
+            ChromeOptions options = new ChromeOptions();
+
+            driver = new RemoteWebDriver(
+                    new URL("http://localhost:4444"),
+                    options
+            );
+
         } else if (browser.equalsIgnoreCase("firefox")) {
-            caps.setBrowserName("firefox");
+
+            FirefoxOptions options = new FirefoxOptions();
+
+            driver = new RemoteWebDriver(
+                    new URL("http://selenium-hub:4444"),
+                    options
+            );
         }
 
-        driver = new RemoteWebDriver(
-                new URL("http://localhost:4444/wd/hub"),
-                caps
-        );
-
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.get("https://app.voxy.com/v2/#/login");
     }
 
     @AfterMethod
     public void tearDown() {
-        driver.quit();
+        if (driver != null) {
+            driver.quit();
+        }
     }
 }

@@ -10,8 +10,10 @@ import java.net.URL;
 import java.time.Duration;
 
 public class BaseTest {
-    protected WebDriver driver;
-
+    public static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+    public WebDriver getDriver() {
+        return driver.get();
+    }
     @BeforeMethod
     public void setup() throws Exception {
 
@@ -21,29 +23,25 @@ public class BaseTest {
 
             ChromeOptions options = new ChromeOptions();
 
-            driver = new RemoteWebDriver(
-                    new URL("http://localhost:4444"),
-                    options
-            );
+            driver.set(new RemoteWebDriver(new URL("http://localhost:4444"), options));
+
 
         } else if (browser.equalsIgnoreCase("firefox")) {
 
             FirefoxOptions options = new FirefoxOptions();
 
-            driver = new RemoteWebDriver(
-                    new URL("http://selenium-hub:4444"),
-                    options
-            );
+            driver.set(new RemoteWebDriver(new URL("http://localhost:4444"), options));
         }
 
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        driver.get("https://app.voxy.com/v2/#/login");
+        getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        getDriver().get("https://app.voxy.com/v2/#/login");
     }
 
     @AfterMethod
     public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
+
+            getDriver().quit();
+            driver.remove();
+
     }
 }

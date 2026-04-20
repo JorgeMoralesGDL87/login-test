@@ -1,32 +1,37 @@
 package com.automation.base;
-
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import io.github.bonigarcia.wdm.WebDriverManager;
-public class BaseTest {
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.testng.annotations.*;
 
+import java.net.URL;
+
+public class BaseTest {
     protected WebDriver driver;
 
     @BeforeMethod
-    public void setUp() {
+    public void setup() throws Exception {
 
-        driver = new ChromeDriver();
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        driver.manage().window().maximize();
+        String browser = System.getProperty("browser", "chrome");
+
+        DesiredCapabilities caps = new DesiredCapabilities();
+
+        if (browser.equalsIgnoreCase("chrome")) {
+            caps.setBrowserName("chrome");
+        } else if (browser.equalsIgnoreCase("firefox")) {
+            caps.setBrowserName("firefox");
+        }
+
+        driver = new RemoteWebDriver(
+                new URL("http://localhost:4444/wd/hub"),
+                caps
+        );
+
         driver.get("https://app.voxy.com/v2/#/login");
     }
 
     @AfterMethod
     public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
+        driver.quit();
     }
 }
